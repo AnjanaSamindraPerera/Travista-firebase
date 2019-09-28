@@ -34,6 +34,8 @@ exports.validateSignupData = data => {
   if (isEmpty(data.handle)) errors.handle = "Must not be empty";
 
   //also need category done
+  if (data.category.length == 0)
+    errors.general = "category should be selected ";
 
   return {
     errors,
@@ -52,4 +54,27 @@ exports.validateLoginData = data => {
     errors,
     valid: Object.keys(errors).length === 0 ? true : false
   };
+};
+
+exports.reduceUserDetails = data => {
+  //by doing so if each user have this property and we make sure not to send empty string if they not poses that property
+
+  let userDetails = {};
+
+  if (!isEmpty(data.bio.trim())) userDetails.bio = data.bio;
+
+  if (!isEmpty(data.website.trim())) {
+    if (data.website.trim().substring(0, 4) !== "http") {
+      userDetails.website = `http://${data.website.trim()}`;
+    } else {
+      userDetails.website = data.website;
+    }
+  }
+
+  if (!isEmpty(data.location.trim())) userDetails.location = data.location;
+
+  if (!isEmpty(data.telNo.trim())) userDetails.telNo = data.telNo;
+
+  //need to add properties category wise too
+  return userDetails;
 };
