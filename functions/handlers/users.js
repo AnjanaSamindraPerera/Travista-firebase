@@ -80,7 +80,9 @@ exports.signup = (req, res) => {
       } else if (err.code === "auth/weak-password") {
         return res.status(403).json({ password: "Enter a strong password" });
       } else {
-        return res.status(500).json({ error: err.code });
+        return res
+          .status(500)
+          .json({ genaral: "Somethings wrong, Please try again" });
       }
     });
   //201 resourse created
@@ -145,6 +147,28 @@ exports.getUser = (req, res) => {
       data.forEach(doc => {
         userData.likes.push(doc.data());
       });
+      return db
+        .collection("notifications")
+        .where("recipientAt", "==", req.user.handle)
+        .orderBy("createdAt", "desc")
+        .limit(10)
+        .get();
+    })
+
+    .then(data => {
+      userData.notifications = [];
+      data.forEach(doc => {
+        userData.notifications.push({
+          recipient: doc.data().recipient,
+          sender: doc.data().sender,
+          createdAt: doc.data().createdAt,
+          adId: doc.data().adId,
+          type: doc.data().type,
+          read: doc.data().read,
+          notificationId: doc.id
+        });
+      });
+
       return res.json(userData);
     })
     .catch(err => {
@@ -279,4 +303,64 @@ exports.uploadProfileImage = (req, res) => {
       });
   });
   busboy.end(req.rawBody);
+};
+
+//get any user's details
+
+exports.getUserDetails = (req, res) => {
+  let userData = {};
+
+  db.doc(`/users/${req.params.handle}`)
+    .get()
+    .then(doc => {
+      if (doc.exists) {
+        userData.user = doc.data();
+        return db
+          .collection("ads")
+          .where("userHandle", "==", req.params.handle)
+          .orderBy("createdAt", "desc")
+          .get();
+      } else {
+        return res.status(404).json({ error: "Not a valid user" });
+      }
+    })
+    .then(data => {
+      userData.ads = [];
+      data.forEach(doc => {
+        userData.ads.push({
+          body: doc.data().body,
+          createdAt: doc.data().createdAt,
+          userHandle: doc.data().userHandle,
+          userImage: doc.data().userImage,
+          likeCount: doc.data().likeCount,
+          commentCount: doc.data().commentCount,
+          adId: doc.data().adId
+        });
+      });
+      return res.json(userData);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).json({ error: err.code });
+    });
+};
+
+//when read notification
+
+exports.readNotification = (req, res) => {
+  let batch = db.batch(); //array of notificatio ids sent
+  //update multiple documents using batch
+  req.body.forEach(notificationId => {
+    const notification = db.doc(`/notifications/${notificationId}`);
+    batch.update(notification, { read: true });
+  });
+  batch
+    .commit()
+    .then(() => {
+      return res.json({ message: "Notification marked read" });
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).json({ error: err.code });
+    });
 };
