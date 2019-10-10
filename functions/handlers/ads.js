@@ -15,7 +15,8 @@ exports.getAllAds = (req, res) => {
           createdAt: doc.data().createdAt,
           commentCount: doc.data().commentCount,
           likeCount: doc.data().likeCount,
-          userImage: doc.data().userImage
+          userImage: doc.data().userImage,
+          adImage: doc.data().adImage
         }); //doc is a refference.to access data we use that function
       });
 
