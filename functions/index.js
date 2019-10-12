@@ -15,7 +15,9 @@ const {
   commentOnAd,
   likeAd,
   unlikeAd,
-  uploadAdImage
+  uploadAdImage,
+  postAdWithImg,
+  uploadOnlyAdImage
 } = require("./handlers/ads");
 
 const {
@@ -29,12 +31,19 @@ const {
   readNotification
 } = require("./handlers/users");
 
-// reviews routes
+const { getAllReviews, postOneReview } = require("./handlers/reviews");
+
+// scream routes
 app.get("/screams", getAllScreams);
 app.post("/scream", FBAuth, postOneScream);
 
+// reviews routes
+app.get("/reviews", getAllReviews);
+app.post("/review/:serviceId/:travelerId", postOneReview);
+
 // advertisment routes
 app.get("/ads", getAllAds);
+//post only ad body-caption
 app.post("/ad", FBAuth, postOneAd);
 app.get("/ad/:adId", getAd);
 //delete Ad
@@ -47,6 +56,10 @@ app.get("/ad/:adId/unlike", FBAuth, unlikeAd);
 app.post("/ad/:adId/comment", FBAuth, commentOnAd);
 //add image
 app.post("/ad/:adId/image", FBAuth, uploadAdImage);
+//post ad with image
+app.post("/advertisment", FBAuth, postAdWithImg);
+//post only ad image
+app.post("/adImage", FBAuth, uploadOnlyAdImage);
 
 //users routes
 app.post("/signup", signup);

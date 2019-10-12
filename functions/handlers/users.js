@@ -168,9 +168,27 @@ exports.getUser = (req, res) => {
           notificationId: doc.id
         });
       });
+      return db
+        .collection("reviews")
+        .where("serviceId", "==", req.user.handle)
+        .orderBy("createdAt", "desc")
+        .get();
+    })
 
+    .then(data => {
+      userData.reviews = [];
+      data.forEach(doc => {
+        userData.reviews.push({
+          reviewId: doc.id,
+          body: doc.data().body,
+          travelerId: doc.data().travelerId,
+          serviceId: doc.data().serviceId,
+          createdAt: doc.data().createdAt
+        });
+      });
       return res.json(userData);
     })
+
     .catch(err => {
       console.log(err);
       return res.status(500).json({ error: err.code });
@@ -337,8 +355,27 @@ exports.getUserDetails = (req, res) => {
           adId: doc.data().adId
         });
       });
+      return db
+        .collection("reviews")
+        .where("serviceId", "==", req.user.handle)
+        .orderBy("createdAt", "desc")
+        .get();
+      //need to get reviews too
+    })
+    .then(data => {
+      userData.reviews = [];
+      data.forEach(doc => {
+        userData.reviews.push({
+          reviewId: doc.id,
+          body: doc.data().body,
+          travelerId: doc.data().travelerId,
+          serviceId: doc.data().serviceId,
+          createdAt: doc.data().createdAt
+        });
+      });
       return res.json(userData);
     })
+
     .catch(err => {
       console.log(err);
       return res.status(500).json({ error: err.code });
