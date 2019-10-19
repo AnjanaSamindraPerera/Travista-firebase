@@ -126,6 +126,28 @@ exports.login = (req, res) => {
       } else return res.status(500).json({ error: err.code });
     });
 };
+//reset password
+exports.resetPassword = (req, res) => {
+  const user = {
+    email: req.body.email
+  };
+
+  var auth = firebase.auth();
+  var emailAddress = user.email;
+
+  auth
+    .sendPasswordResetEmail(emailAddress)
+    .then(() => {
+      return res.json({
+        message: "Check your email"
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).json({ error: err.code });
+    });
+};
+
 //get user details
 
 exports.getUser = (req, res) => {
