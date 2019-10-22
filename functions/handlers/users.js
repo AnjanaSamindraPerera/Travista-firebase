@@ -8,7 +8,8 @@ firebase.initializeApp(config);
 const {
   validateSignupData,
   validateLoginData,
-  reduceUserDetails
+  reduceUserDetails,
+  validateForgetPassword
 } = require("../util/validators");
 
 //signup
@@ -123,14 +124,62 @@ exports.login = (req, res) => {
         return res
           .status(403)
           .json({ general: "Invalid email,please try again" });
-      } else return res.status(500).json({ error: err.code });
+      } else
+        return res
+          .status(500)
+          .json({ genaral: "Somethings wrong, Please try again" });
     });
 };
+
+//change password with reauthentication
+
+exports.changePassword = (req, res) => {
+  const userNew = {
+    password: req.body.password,
+    newPassword: req.body.newPassword
+  };
+  var user = firebase.auth().currentUser;
+  var credential = firebase.auth.EmailAuthProvider.credential(
+    req.user.email,
+    userNew.password
+  );
+
+  user
+    .reauthenticateWithCredential(credential)
+    .then(() => {
+      // User re-authenticated.
+      var user = firebase.auth().currentUser;
+      var newPassword = userNew.newPassword;
+
+      user
+        .updatePassword(newPassword)
+        .then(() => {
+          // Update successful.
+          return res.json({
+            message: "change password succesfully"
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    })
+    .catch(err => {
+      console.log(err);
+      return res
+        .status(403)
+        .json({ general: "Invalid password,please try again" });
+    });
+};
+
 //reset password
 exports.resetPassword = (req, res) => {
   const user = {
     email: req.body.email
   };
+
+  const { valid, errors } = validateForgetPassword(user);
+
+  if (!valid) return res.status(400).json(errors);
 
   var auth = firebase.auth();
   var emailAddress = user.email;
@@ -139,12 +188,14 @@ exports.resetPassword = (req, res) => {
     .sendPasswordResetEmail(emailAddress)
     .then(() => {
       return res.json({
-        message: "Check your email"
+        message: `Email Sent!\n An email with instructions on how to reset your password has been sent to ${user.email}. Check your spam or junk folder if you don’t see the email in your inbox.`
       });
     })
     .catch(err => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return res
+        .status(403)
+        .json({ general: "Invalid email,please try again" });
     });
 };
 
