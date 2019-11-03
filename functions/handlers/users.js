@@ -131,6 +131,43 @@ exports.login = (req, res) => {
     });
 };
 
+//change user email
+
+exports.changeEmail = (req, res) => {
+  const userNew = {
+    password: req.body.password,
+    email: req.body.email
+  };
+  var user = firebase.auth().currentUser;
+  var credential = firebase.auth.EmailAuthProvider.credential(
+    user.email,
+    userNew.password
+  );
+
+  user
+    .reauthenticateWithCredential(credential)
+    .then(() => {
+      // User re-authenticated.
+      var user = firebase.auth().currentUser;
+      var email = userNew.email;
+
+      user
+        .updateEmail(email)
+        .then(() => {
+          // Update successful.
+          return res.json({
+            message: "change email succesfully"
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
 //change password with reauthentication
 
 exports.changePassword = (req, res) => {
@@ -140,7 +177,7 @@ exports.changePassword = (req, res) => {
   };
   var user = firebase.auth().currentUser;
   var credential = firebase.auth.EmailAuthProvider.credential(
-    req.user.email,
+    user.email,
     userNew.password
   );
 
@@ -196,6 +233,39 @@ exports.resetPassword = (req, res) => {
       return res
         .status(403)
         .json({ general: "Invalid email,please try again" });
+    });
+};
+
+exports.deleteUser = (req, res) => {
+  const userNew = {
+    password: req.body.password,
+    email: req.body.email
+  };
+  var user = firebase.auth().currentUser;
+  var credential = firebase.auth.EmailAuthProvider.credential(
+    user.email,
+    userNew.password
+  );
+
+  user
+    .reauthenticateWithCredential(credential)
+    .then(() => {
+      var user = firebase.auth().currentUser;
+
+      user
+        .delete()
+        .then(() => {
+          // User deleted.
+          return res.json({
+            message: "User deleted succesfully"
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    })
+    .catch(err => {
+      console.log(err);
     });
 };
 
