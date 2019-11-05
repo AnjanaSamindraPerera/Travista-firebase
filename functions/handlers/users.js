@@ -9,7 +9,9 @@ const {
   validateSignupData,
   validateLoginData,
   reduceUserDetails,
-  validateForgetPassword
+  validateForgetPassword,
+  validateChangePassword,
+  validateChangeEmail
 } = require("../util/validators");
 
 //signup
@@ -83,7 +85,7 @@ exports.signup = (req, res) => {
       } else {
         return res
           .status(500)
-          .json({ genaral: "Somethings wrong, Please try again" });
+          .json({ general: "Somethings wrong, Please try again" });
       }
     });
   //201 resourse created
@@ -127,7 +129,7 @@ exports.login = (req, res) => {
       } else
         return res
           .status(500)
-          .json({ genaral: "Somethings wrong, Please try again" });
+          .json({ general: "Somethings wrong, Please try again" });
     });
 };
 
@@ -138,6 +140,11 @@ exports.changeEmail = (req, res) => {
     password: req.body.password,
     email: req.body.email
   };
+
+  const { valid, errors } = validateChangeEmail(userNew);
+
+  if (!valid) return res.status(400).json(errors);
+
   var user = firebase.auth().currentUser;
   var credential = firebase.auth.EmailAuthProvider.credential(
     user.email,
@@ -161,10 +168,16 @@ exports.changeEmail = (req, res) => {
         })
         .catch(err => {
           console.log(err);
+          return res
+            .status(403)
+            .json({ general: "Invalid password,please try again" });
         });
     })
     .catch(err => {
       console.log(err);
+      return res
+        .status(403)
+        .json({ general: "Invalid password,please try again" });
     });
 };
 
@@ -173,8 +186,14 @@ exports.changeEmail = (req, res) => {
 exports.changePassword = (req, res) => {
   const userNew = {
     password: req.body.password,
-    newPassword: req.body.newPassword
+    newPassword: req.body.newPassword,
+    confirmPassword: req.body.confirmPassword
   };
+
+  const { valid, errors } = validateChangePassword(userNew);
+
+  if (!valid) return res.status(400).json(errors);
+
   var user = firebase.auth().currentUser;
   var credential = firebase.auth.EmailAuthProvider.credential(
     user.email,
@@ -198,6 +217,9 @@ exports.changePassword = (req, res) => {
         })
         .catch(err => {
           console.log(err);
+          return res
+            .status(403)
+            .json({ general: "Invalid password,please try again" });
         });
     })
     .catch(err => {
@@ -241,9 +263,15 @@ exports.deleteUser = (req, res) => {
     password: req.body.password,
     email: req.body.email
   };
+
+  // validatechangeEmail function use to validate because it's similar to  functionality here
+  const { valid, errors } = validateChangeEmail(userNew);
+
+  if (!valid) return res.status(400).json(errors);
+
   var user = firebase.auth().currentUser;
   var credential = firebase.auth.EmailAuthProvider.credential(
-    user.email,
+    userNew.email,
     userNew.password
   );
 
@@ -262,10 +290,16 @@ exports.deleteUser = (req, res) => {
         })
         .catch(err => {
           console.log(err);
+          return res
+            .status(403)
+            .json({ general: "Invalid password,please try again" });
         });
     })
     .catch(err => {
       console.log(err);
+      return res
+        .status(403)
+        .json({ general: "Invalid password,please try again" });
     });
 };
 

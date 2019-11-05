@@ -72,6 +72,44 @@ exports.validateForgetPassword = data => {
   };
 };
 
+exports.validateChangePassword = data => {
+  //validate data
+  let errors = {};
+
+  //corect password errors
+
+  if (isEmpty(data.password)) errors.password = "Must not be empty";
+  if (isEmpty(data.newPassword)) errors.password = "Must not be empty";
+
+  if (data.newPassword !== data.confirmPassword)
+    errors.confirmPassword = "Passwords must be matched";
+
+  return {
+    errors,
+    valid: Object.keys(errors).length === 0 ? true : false
+  };
+};
+
+exports.validateChangeEmail = data => {
+  let errors = {};
+
+  //corect password errors
+
+  if (isEmpty(data.password)) errors.password = "Must not be empty";
+
+  //correct email errors
+  if (isEmpty(data.email)) {
+    errors.email = " Must not be empty";
+  } else if (!isEmail(data.email)) {
+    errors.email = "Must be a valid email address";
+  }
+
+  return {
+    errors,
+    valid: Object.keys(errors).length === 0 ? true : false
+  };
+};
+
 exports.reduceUserDetails = data => {
   //by doing so if each user have this property and we make sure not to send empty string if they not poses that property
 
