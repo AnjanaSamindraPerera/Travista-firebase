@@ -134,7 +134,6 @@ exports.login = (req, res) => {
 };
 
 //change user email
-
 exports.changeEmail = (req, res) => {
   const userNew = {
     password: req.body.password,
@@ -303,8 +302,42 @@ exports.deleteUser = (req, res) => {
     });
 };
 
-//get user details
+//get ads specific for user
+exports.getUserAds = (req, res) => {
+  db.doc(`/users/${req.user.handle}`)
+    .get()
+    .then(doc => {
+      if (doc.exists) {
+        return db
+          .collection("ads")
+          .where("userHandle", "==", req.user.handle)
+          .orderBy("createdAt", "desc")
+          .get();
+      }
+    })
+    .then(data => {
+      let ads = [];
+      data.forEach(doc => {
+        ads.push({
+          body: doc.data().body,
+          createdAt: doc.data().createdAt,
+          userHandle: doc.data().userHandle,
+          userImage: doc.data().userImage,
+          adImage: doc.data().adImage,
+          likeCount: doc.data().likeCount,
+          commentCount: doc.data().commentCount,
+          adId: doc.id
+        });
+      });
+      return res.json(ads);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).json({ error: err.code });
+    });
+};
 
+//get user details
 exports.getUser = (req, res) => {
   let userData = {};
 
@@ -363,9 +396,29 @@ exports.getUser = (req, res) => {
           createdAt: doc.data().createdAt
         });
       });
+      //
+      return db
+        .collection("ads")
+        .where("userHandle", "==", req.user.handle)
+        .orderBy("createdAt", "desc")
+        .get();
+    })
+    .then(data => {
+      userData.advertisments = [];
+      data.forEach(doc => {
+        userData.advertisments.push({
+          body: doc.data().body,
+          createdAt: doc.data().createdAt,
+          userHandle: doc.data().userHandle,
+          userImage: doc.data().userImage,
+          adImage: doc.data().adImage,
+          likeCount: doc.data().likeCount,
+          commentCount: doc.data().commentCount,
+          adId: doc.id
+        });
+      });
       return res.json(userData);
     })
-
     .catch(err => {
       console.log(err);
       return res.status(500).json({ error: err.code });
@@ -527,9 +580,10 @@ exports.getUserDetails = (req, res) => {
           createdAt: doc.data().createdAt,
           userHandle: doc.data().userHandle,
           userImage: doc.data().userImage,
+          adImage: doc.data().adImage,
           likeCount: doc.data().likeCount,
           commentCount: doc.data().commentCount,
-          adId: doc.data().adId
+          adId: doc.id
         });
       });
       return db

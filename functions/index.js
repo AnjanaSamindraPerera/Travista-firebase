@@ -32,7 +32,8 @@ const {
   resetPassword,
   changePassword,
   changeEmail,
-  deleteUser
+  deleteUser,
+  getUserAds
 } = require("./handlers/users");
 
 const { getAllReviews, postOneReview } = require("./handlers/reviews");
@@ -78,6 +79,7 @@ app.post("/user/reset", resetPassword);
 app.post("/user/change", FBAuth, changePassword);
 app.post("/user/changeEmail", FBAuth, changeEmail);
 app.post("/user/deleteUser", FBAuth, deleteUser);
+app.get("/service/getAds", FBAuth, getUserAds);
 
 //routes are in app
 //https://baseurl.com/api/...
