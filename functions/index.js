@@ -178,6 +178,16 @@ exports.onProPicChange = functions
             const ad = db.doc(`/ads/${doc.id}`);
             batch.update(ad, { userImage: change.after.data().imageUrl });
           });
+          return db
+            .collection("comments")
+            .where("userHandle", "==", change.before.data().handle)
+            .get();
+        })
+        .then(data => {
+          data.forEach(doc => {
+            const comment = db.doc(`/comments/${doc.id}`);
+            batch.update(comment, { userImage: change.after.data().imageUrl });
+          });
           return batch.commit();
         });
     } else return true;

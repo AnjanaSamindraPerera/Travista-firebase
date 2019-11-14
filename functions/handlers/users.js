@@ -369,7 +369,7 @@ exports.getUser = (req, res) => {
       userData.notifications = [];
       data.forEach(doc => {
         userData.notifications.push({
-          recipient: doc.data().recipient,
+          recipientAt: doc.data().recipientAt,
           sender: doc.data().sender,
           createdAt: doc.data().createdAt,
           adId: doc.data().adId,
