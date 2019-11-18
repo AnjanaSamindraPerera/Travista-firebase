@@ -37,6 +37,7 @@ const {
 } = require("./handlers/users");
 
 const { getAllReviews, postOneReview } = require("./handlers/reviews");
+const { checkout } = require("./handlers/payment");
 
 // scream routes
 app.get("/screams", getAllScreams);
@@ -80,6 +81,9 @@ app.post("/user/change", FBAuth, changePassword);
 app.post("/user/changeEmail", FBAuth, changeEmail);
 app.post("/user/deleteUser", FBAuth, deleteUser);
 app.get("/service/getAds", FBAuth, getUserAds);
+
+//payment
+app.post("/checkout", FBAuth, checkout);
 
 //routes are in app
 //https://baseurl.com/api/...
