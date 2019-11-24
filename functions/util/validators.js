@@ -116,6 +116,7 @@ exports.reduceUserDetails = data => {
   let userDetails = {};
 
   if (!isEmpty(data.bio.trim())) userDetails.bio = data.bio;
+  else userDetails.bio = " ";
 
   if (!isEmpty(data.website.trim())) {
     if (data.website.trim().substring(0, 4) !== "http") {
@@ -123,11 +124,21 @@ exports.reduceUserDetails = data => {
     } else {
       userDetails.website = data.website;
     }
-  }
+  } else userDetails.website = " ";
 
   if (!isEmpty(data.location.trim())) userDetails.location = data.location;
+  else userDetails.location = " ";
 
   if (!isEmpty(data.telNo.trim())) userDetails.telNo = data.telNo;
+  else userDetails.telNo = " ";
+
+  if (!isEmpty(data.booking.trim())) {
+    if (data.booking.trim().substring(0, 4) !== "http") {
+      userDetails.booking = `http://${data.booking.trim()}`;
+    } else {
+      userDetails.booking = data.booking;
+    }
+  } else userDetails.booking = " ";
 
   //need to add properties category wise too
   return userDetails;
