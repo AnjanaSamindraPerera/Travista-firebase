@@ -118,6 +118,12 @@ exports.reduceUserDetails = data => {
   if (!isEmpty(data.bio.trim())) userDetails.bio = data.bio;
   else userDetails.bio = " ";
 
+  if (!isEmpty(data.lat)) userDetails.lat = data.lat;
+  else userDetails.lat = " ";
+
+  if (!isEmpty(data.long)) userDetails.long = data.long;
+  else userDetails.long = " ";
+
   if (!isEmpty(data.website.trim())) {
     if (data.website.trim().substring(0, 4) !== "http") {
       userDetails.website = `http://${data.website.trim()}`;
