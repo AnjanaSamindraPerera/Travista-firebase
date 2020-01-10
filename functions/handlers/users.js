@@ -302,6 +302,25 @@ exports.deleteUser = (req, res) => {
     });
 };
 
+//get all user names
+
+exports.getAllUsers = (req, res) => {
+  db.collection("users")
+    .orderBy("createdAt", "desc")
+    .get()
+    .then(data => {
+      let users = []; //to store users names
+      data.forEach(doc => {
+        users.push({
+          name: doc.id
+        }); //doc is a refference.to access data we use that function
+      });
+
+      return res.json(users);
+    })
+    .catch(err => console.error());
+};
+
 //get ads specific for user
 exports.getUserAds = (req, res) => {
   db.doc(`/users/${req.user.handle}`)
@@ -588,7 +607,7 @@ exports.getUserDetails = (req, res) => {
       });
       return db
         .collection("reviews")
-        .where("serviceId", "==", req.user.handle)
+        .where("serviceId", "==", req.params.handle)
         .orderBy("createdAt", "desc")
         .get();
       //need to get reviews too

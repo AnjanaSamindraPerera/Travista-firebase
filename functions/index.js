@@ -33,7 +33,8 @@ const {
   changePassword,
   changeEmail,
   deleteUser,
-  getUserAds
+  getUserAds,
+  getAllUsers
 } = require("./handlers/users");
 
 const { getAllReviews, postOneReview } = require("./handlers/reviews");
@@ -81,6 +82,7 @@ app.post("/user/change", FBAuth, changePassword);
 app.post("/user/changeEmail", FBAuth, changeEmail);
 app.post("/user/deleteUser", FBAuth, deleteUser);
 app.get("/service/getAds", FBAuth, getUserAds);
+app.get("/users", FBAuth, getAllUsers);
 
 //payment
 app.post("/checkout", FBAuth, checkout);
