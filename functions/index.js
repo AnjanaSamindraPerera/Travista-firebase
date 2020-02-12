@@ -46,7 +46,7 @@ app.post("/scream", FBAuth, postOneScream);
 
 // reviews routes
 app.get("/reviews", getAllReviews);
-app.post("/review/:serviceId/:travelerId", postOneReview);
+app.post("/review", postOneReview);
 
 // advertisment routes
 app.get("/ads", getAllAds);
@@ -75,14 +75,14 @@ app.post("/user/imagePro", FBAuth, uploadProfileImage);
 app.post("/user/imageCover", FBAuth, uploadCoverImage);
 app.post("/user", FBAuth, addUserDetails);
 app.get("/user", FBAuth, getUser);
-app.get("/user/:handle", FBAuth, getUserDetails);
+app.get("/user/:handle", getUserDetails); //auth needed
 app.post("/notification", FBAuth, readNotification);
 app.post("/user/reset", resetPassword);
 app.post("/user/change", FBAuth, changePassword);
 app.post("/user/changeEmail", FBAuth, changeEmail);
 app.post("/user/deleteUser", FBAuth, deleteUser);
 app.get("/service/getAds", FBAuth, getUserAds);
-app.get("/users", FBAuth, getAllUsers);
+app.get("/users", getAllUsers); //auth needed
 
 //payment
 app.post("/checkout", FBAuth, checkout);
@@ -142,6 +142,32 @@ exports.createNotificationOnLComment = functions
             type: "comment",
             read: false,
             adId: doc.id
+          });
+        }
+      })
+
+      .catch(err => {
+        console.error(err);
+        return;
+      });
+  });
+
+exports.createNotificationOnReview = functions //trigger for creating a notification on review
+  .region("asia-east2")
+  .firestore.document("reviews/{id}")
+  .onCreate(snapshot => {
+    return db
+      .doc(`/users/${snapshot.data().serviceId}`)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          return db.doc(`/notifications/${snapshot.id}`).set({
+            createdAt: new Date().toISOString(),
+            recipientAt: snapshot.data().serviceId,
+            sender: snapshot.data().travelerId,
+            type: "review",
+            read: false,
+            adId: snapshot.id
           });
         }
       })

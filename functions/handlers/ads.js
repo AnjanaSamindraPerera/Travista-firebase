@@ -32,6 +32,7 @@ exports.postOneAd = (req, res) => {
 
   const newAd = {
     body: req.body.body,
+    paid: "F",
     userHandle: req.user.handle,
     userImage: req.user.imageUrl,
     createdAt: new Date().toISOString(),
@@ -319,6 +320,7 @@ exports.uploadOnlyAdImage = (req, res) => {
         const newAd = {
           userHandle: req.user.handle,
           userImage: req.user.imageUrl,
+          paid: "F",
           adImage: adImage,
           createdAt: new Date().toISOString(),
           likeCount: 0,
@@ -397,6 +399,7 @@ exports.postAdWithImg = (req, res) => {
 
         const newAd = {
           body: body,
+          paid: "T",
           userHandle: req.user.handle,
           userImage: req.user.imageUrl,
           adImage: adImage,

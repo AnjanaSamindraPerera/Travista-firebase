@@ -22,17 +22,19 @@ exports.getAllReviews = (req, res) => {
 };
 
 exports.postOneReview = (req, res) => {
-  if (req.body.body.trim() === "") {
+  if (req.body.body === " ") {
     return res.status(400).json({ body: "Body must not be empty" });
   }
 
   const newReview = {
-    body: req.body.body,
-    travelerId: req.params.travelerId,
-    createdAt: new Date().toISOString(),
-    serviceId: req.params.serviceId
+    body: req.body.body, //review body
+    travelerId: req.body.travelerId, //traveler name
+    createdAt: new Date().toISOString(), //automatically created
+    serviceId: req.body.serviceId, //service handle name
+    uid: req.body.uid, //uid
+    travelerImage: req.body.travelerImage //traveler image
   };
-
+  console.log(newReview);
   admin
     .firestore()
     .collection("reviews")

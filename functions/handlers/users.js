@@ -312,7 +312,8 @@ exports.getAllUsers = (req, res) => {
       let users = []; //to store users names
       data.forEach(doc => {
         users.push({
-          name: doc.id
+          name: doc.id,
+          imageUrl: doc.data().imageUrl
         }); //doc is a refference.to access data we use that function
       });
 
@@ -412,7 +413,8 @@ exports.getUser = (req, res) => {
           body: doc.data().body,
           travelerId: doc.data().travelerId,
           serviceId: doc.data().serviceId,
-          createdAt: doc.data().createdAt
+          createdAt: doc.data().createdAt,
+          travelerImage: doc.data().travelerImage
         });
       });
       //
@@ -620,7 +622,8 @@ exports.getUserDetails = (req, res) => {
           body: doc.data().body,
           travelerId: doc.data().travelerId,
           serviceId: doc.data().serviceId,
-          createdAt: doc.data().createdAt
+          createdAt: doc.data().createdAt,
+          travelerImage: doc.data().travelerImage
         });
       });
       return res.json(userData);
