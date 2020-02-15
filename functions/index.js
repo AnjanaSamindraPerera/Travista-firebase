@@ -50,7 +50,10 @@ const {
   deleteAdByAdmin,
   addUserDetailsAdmin,
   getUserAdmin,
-  uploadProfileImageAdmin
+  uploadProfileImageAdmin,
+  changePasswordAdmin,
+  changeEmailAdmin,
+  deleteAdmin
 } = require("./handlers/admins");
 
 // scream routes
@@ -88,6 +91,9 @@ app.post("/admin", FBAuth2, addUserDetailsAdmin);
 app.get("/admin", FBAuth2, getUserAdmin);
 app.delete("/adAdmin/:adId", FBAuth2, deleteAdByAdmin);
 app.post("/admin/image", FBAuth2, uploadProfileImageAdmin);
+app.post("/admin/changepw", FBAuth2, changePasswordAdmin);
+app.post("/admin/changeEmailAdmin", FBAuth2, changeEmailAdmin);
+app.post("/admin/deleteAdmin", FBAuth2, deleteAdmin);
 
 //users routes
 app.post("/signup", signup);

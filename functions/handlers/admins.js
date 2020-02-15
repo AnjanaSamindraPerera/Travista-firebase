@@ -3,7 +3,9 @@ const { admin, db } = require("../util/admin");
 const {
   validateSignupData,
   validateLoginData,
-  reduceUserDetails
+  reduceUserDetails,
+  validateChangePassword,
+  validateChangeEmail
 } = require("../util/validators");
 const config = require("../util/config");
 const firebase = require("firebase");
@@ -318,4 +320,147 @@ exports.uploadProfileImageAdmin = (req, res) => {
       });
   });
   busboy.end(req.rawBody);
+};
+
+//change password with reauthentication admin
+
+exports.changePasswordAdmin = (req, res) => {
+  const userNew = {
+    password: req.body.password,
+    newPassword: req.body.newPassword,
+    confirmPassword: req.body.confirmPassword
+  };
+
+  const { valid, errors } = validateChangePassword(userNew);
+
+  if (!valid) return res.status(400).json(errors);
+
+  var user = firebase.auth().currentUser;
+  var credential = firebase.auth.EmailAuthProvider.credential(
+    user.email,
+    userNew.password
+  );
+
+  user
+    .reauthenticateWithCredential(credential)
+    .then(() => {
+      // User re-authenticated.
+      var user = firebase.auth().currentUser;
+      var newPassword = userNew.newPassword;
+
+      user
+        .updatePassword(newPassword)
+        .then(() => {
+          // Update successful.
+          return res.json({
+            message: "change password succesfully"
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          return res
+            .status(403)
+            .json({ general: "Invalid password,please try again" });
+        });
+    })
+    .catch(err => {
+      console.log(err);
+      return res
+        .status(403)
+        .json({ general: "Invalid password,please try again" });
+    });
+};
+
+//change admin email
+exports.changeEmailAdmin = (req, res) => {
+  const userNew = {
+    password: req.body.password,
+    email: req.body.email
+  };
+
+  const { valid, errors } = validateChangeEmail(userNew);
+
+  if (!valid) return res.status(400).json(errors);
+
+  var user = firebase.auth().currentUser;
+  var credential = firebase.auth.EmailAuthProvider.credential(
+    user.email,
+    userNew.password
+  );
+
+  user
+    .reauthenticateWithCredential(credential)
+    .then(() => {
+      // User re-authenticated.
+      var user = firebase.auth().currentUser;
+      var email = userNew.email;
+
+      user
+        .updateEmail(email)
+        .then(() => {
+          // Update successful.
+          return res.json({
+            message: "change email succesfully"
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          return res
+            .status(403)
+            .json({ general: "Invalid password,please try again" });
+        });
+    })
+    .catch(err => {
+      console.log(err);
+      return res
+        .status(403)
+        .json({ general: "Invalid password,please try again" });
+    });
+};
+
+//delete admin account
+
+exports.deleteAdmin = (req, res) => {
+  const userNew = {
+    password: req.body.password,
+    email: req.body.email
+  };
+
+  // validatechangeEmail function use to validate because it's similar to  functionality here
+  const { valid, errors } = validateChangeEmail(userNew);
+
+  if (!valid) return res.status(400).json(errors);
+
+  var user = firebase.auth().currentUser;
+  var credential = firebase.auth.EmailAuthProvider.credential(
+    userNew.email,
+    userNew.password
+  );
+
+  user
+    .reauthenticateWithCredential(credential)
+    .then(() => {
+      var user = firebase.auth().currentUser;
+
+      user
+        .delete()
+        .then(() => {
+          // User deleted.
+          return res.json({
+            message: "User deleted succesfully"
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          return res
+            .status(403)
+            .json({ general: "Invalid password,please try again" });
+        });
+    })
+    .catch(err => {
+      console.log(err);
+      return res
+        .status(403)
+        .json({ general: "Invalid password,please try again" });
+    });
 };
