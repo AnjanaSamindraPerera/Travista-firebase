@@ -4,6 +4,11 @@ const express = require("express");
 const app = express();
 
 const FBAuth = require("./util/fbAuth");
+const FBAuth2 = require("./util/fbAuth2");
+
+const cors = require("cors");
+app.use(cors());
+
 const { db } = require("./util/admin");
 const { getAllScreams, postOneScream } = require("./handlers/screams");
 
@@ -39,6 +44,14 @@ const {
 
 const { getAllReviews, postOneReview } = require("./handlers/reviews");
 const { checkout } = require("./handlers/payment");
+const {
+  signupAdmin,
+  loginAdmin,
+  deleteAdByAdmin,
+  addUserDetailsAdmin,
+  getUserAdmin,
+  uploadProfileImageAdmin
+} = require("./handlers/admins");
 
 // scream routes
 app.get("/screams", getAllScreams);
@@ -49,7 +62,7 @@ app.get("/reviews", getAllReviews);
 app.post("/review", postOneReview);
 
 // advertisment routes
-app.get("/ads", getAllAds);
+app.get("/ads", FBAuth2, getAllAds);
 //post only ad body-caption
 app.post("/ad", FBAuth, postOneAd);
 app.get("/ad/:adId", getAd);
@@ -67,6 +80,14 @@ app.post("/ad/:adId/image", FBAuth, uploadAdImage);
 app.post("/advertisment", FBAuth, postAdWithImg);
 //post only ad image
 app.post("/adImage", FBAuth, uploadOnlyAdImage);
+
+//admin routes
+app.post("/signupAdmin", signupAdmin);
+app.post("/loginAdmin", loginAdmin);
+app.post("/admin", FBAuth2, addUserDetailsAdmin);
+app.get("/admin", FBAuth2, getUserAdmin);
+app.delete("/adAdmin/:adId", FBAuth2, deleteAdByAdmin);
+app.post("/admin/image", FBAuth2, uploadProfileImageAdmin);
 
 //users routes
 app.post("/signup", signup);
