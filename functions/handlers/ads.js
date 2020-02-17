@@ -37,7 +37,8 @@ exports.postOneAd = (req, res) => {
     userImage: req.user.imageUrl,
     createdAt: new Date().toISOString(),
     likeCount: 0,
-    commentCount: 0
+    commentCount: 0,
+    reports: 0
   };
 
   admin
@@ -324,7 +325,8 @@ exports.uploadOnlyAdImage = (req, res) => {
           adImage: adImage,
           createdAt: new Date().toISOString(),
           likeCount: 0,
-          commentCount: 0
+          commentCount: 0,
+          reports: 0
         };
 
         admin
@@ -405,7 +407,8 @@ exports.postAdWithImg = (req, res) => {
           adImage: adImage,
           createdAt: new Date().toISOString(),
           likeCount: 0,
-          commentCount: 0
+          commentCount: 0,
+          reports: 0
         };
 
         admin
